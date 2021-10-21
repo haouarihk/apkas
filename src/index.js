@@ -16,11 +16,12 @@ const argv = require('yargs')
 const configPath = "./config.json"
 let currentConfig = {
     adbPath: false,
+    holdAtEnd: false,
 };
 
 
 let currentPath = '';
-let selectedDevice = '';
+let selectedDevice = 'localhost:58526';
 let devices = [];
 
 
@@ -41,7 +42,7 @@ async function start(args) {
     }
 
     if (argv.d) {
-        await connectToDevice(devices)
+        await connectToDevice(selectedDevice)
         updateConfing({ device: selectedDevice })
     }
 
@@ -75,12 +76,13 @@ async function start(args) {
         return;
     }
 
-
     // execute the install command
     await adbInstallApp(targetPath).catch(console.error)
 
-
-
+    if (config.holdAtEnd) {
+        console.log("the app installed successfully")
+        holdon();
+    }
 }
 
 
@@ -223,8 +225,10 @@ function holdon() {
     console.log("press any key to continue")
     process.stdin.setRawMode(true);
     process.stdin.resume();
-    process.stdin.on('data', (key) => {
-        process.exit();
+    process.stdin.setEncoding('utf8');
+    process.stdin.on('data', () => {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
     })
 }
 

@@ -12,7 +12,6 @@
     "colors": "^1.4.0",
     "yargs": "^17.2.1"
   },
-  "devDependencies": {},
   "pkg": {
     "targets": [
       "node14-win-x64"
