@@ -1,0 +1,7 @@
+.history
+node_modules
+adb
+**/*.exe
+.log
+dist
+tests/config.json
