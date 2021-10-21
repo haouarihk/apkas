@@ -1,6 +1,6 @@
 {
   "main": "./src/index.js",
-  "name": "openaswsl",
+  "name": "open-apk-as-wsl",
   "bin": "bin.js",
   "scripts": {
     "start": "node ./tests/bin.js",
