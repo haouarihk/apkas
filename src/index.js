@@ -6,9 +6,10 @@ const colors = require('colors');
 
 const argv = require('yargs')
     .usage('Usage: $0 <command> [target path]')
-    .command('f', 'forces update for adb')
-    .command('l', 'lists devices')
-    .command('d', 'use device <device name>')
+    .command('-f', 'forces update for adb')
+    .command('-l', 'lists devices')
+    .command('-d', 'use device <device name>')
+    .command('-debug', 'debugger mode')
     .argv;
 
 
@@ -20,6 +21,7 @@ let currentConfig = {
 
 let currentPath = '';
 let selectedDevice = '';
+let devices = [];
 
 
 async function start(args) {
@@ -35,12 +37,11 @@ async function start(args) {
 
     // list all devices if the user wants to
     if (argv.l || argv.list) {
-        console.log("devices:".underline.green)
-        console.log(`${(await getListDevices()).map(lit)}`.yellow)
-        return;
+        return await showAllDevices()
     }
 
     if (argv.d) {
+        await connectToDevice(devices)
         updateConfing({ device: selectedDevice })
     }
 
@@ -48,7 +49,7 @@ async function start(args) {
     if (!targetPath || targetPath?.length === 0) return
 
     // check if we have a adb device connected
-    const devices = await getListDevices()
+    devices = await getListDevices()
 
     if (!selectedDevice) {
         if (devices.length === 0) {
@@ -58,9 +59,10 @@ async function start(args) {
 
         if (devices.length > 1) {
             console.log("More than one device connected")
-            console.log("select Device")
-            await connectToDevice(devices)
+            await showAllDevices();
+            await connectToDevice(await selectFrom(devices));
         }
+
     }
 
 
@@ -124,6 +126,36 @@ async function updateConfing(newConfigData) {
 }
 
 
+const readline = require('readline');
+async function selectFrom(list) {
+    let answeredcorrectly = false;
+    while (!answeredcorrectly) {
+        readline.question(`Select a device: ${list.map(lit)}`, (answer) => {
+            if (answer >= 0 && answer < list.length) {
+
+                const index = parseInt(answer)
+
+                answeredcorrectly = true;
+
+                if (index >= 0 && index < list.length) {
+                    readline.close()
+                    return list[index]
+                }
+
+                console.log("Invalid Input")
+                return selectFrom(list);
+            }
+        })
+    }
+}
+
+
+async function showAllDevices() {
+    console.log("devices:".underline.green)
+    console.log(`${(await getListDevices()).map(lit)}`.yellow)
+
+    holdon()
+}
 
 
 
@@ -179,8 +211,21 @@ async function executeUntilProcesExits(command) {
 }
 
 
-function lit(str) {
-    return `[ ${(selectedDevice === str) ? 'X'.green : ""} ] ${(selectedDevice === str) ? str.green : str}`
+function lit(str, index) {
+    if (selectedDevice === undefined || selectedDevice === null) {
+        return `[ ${index} ] ${(selectedDevice === str) ? str.green : str}`
+    }
+
+    return `[ ${(selectedDevice === str) ? 'X'.green : ""} ] ${index} - ${(selectedDevice === str) ? str.green : str}`
+}
+
+function holdon() {
+    console.log("press any key to continue")
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.on('data', (key) => {
+        process.exit();
+    })
 }
 
 module.exports = start

@@ -2,6 +2,8 @@
 node_modules
 adb
 **/*.exe
+**/*.zip
+tests/platform-tools
 .log
 dist
 release
