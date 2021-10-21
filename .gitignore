@@ -4,4 +4,5 @@ adb
 **/*.exe
 .log
 dist
+release
 tests/config.json

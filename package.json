@@ -18,7 +18,7 @@
       "node14-win-x64"
     ],
     
-    "outputPath": "dist"
+    "outputPath": "release"
   },
   "license": "MIT"
 }
