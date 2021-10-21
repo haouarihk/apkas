@@ -52,6 +52,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: release/openaswsl.exe    #${{ github.event.repository.name }}-linux
+          asset_path: release/${{ github.event.repository.name }}.exe
           asset_name: ${{ github.event.repository.name }}-x64.exe
           asset_content_type: application/binary
