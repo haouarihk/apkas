@@ -107,13 +107,10 @@ async function getSettings() {
         return currentConfig = JSON.parse(fs.readFileSync(join(currentPath, configPath)))
     }
 
-    const _default = {
-        adbPath: false,
-    }
-
     // else create that config file
-    fs.writeFileSync(join(currentPath, configPath), JSON.stringify(_default))
-    currentConfig = { ..._default }
+    fs.writeFileSync(join(currentPath, configPath), JSON.stringify(currentConfig,
+        null,
+        4))
 }
 
 async function updateConfing(newConfigData) {
@@ -123,7 +120,9 @@ async function updateConfing(newConfigData) {
         {
             ...currentConfig,
             ...newConfigData
-        }
+        },
+        null,
+        4
     ))
 }
 
